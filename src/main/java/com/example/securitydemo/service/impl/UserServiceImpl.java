@@ -1,5 +1,6 @@
 package com.example.securitydemo.service.impl;
 
+import com.example.securitydemo.Twilio.EmailService;
 import com.example.securitydemo.Twilio.TwilioService;
 import com.example.securitydemo.Util.GenerateCodeUtil;
 import com.example.securitydemo.entity.Otp;
@@ -22,15 +23,19 @@ public class UserServiceImpl {
     private final PasswordEncoder passwordEncoder;
     private final OtpRepository otpRepository;
     private TwilioService twilioService;
-
+    private final EmailService emailService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           OtpRepository otpRepository,TwilioService twilioService) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder,
+                           OtpRepository otpRepository,
+                           TwilioService twilioService,
+                           EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.otpRepository = otpRepository;
         this.twilioService = twilioService;
+        this.emailService = emailService;
     }
 
     public User addUser(User user) {
@@ -95,6 +100,13 @@ public class UserServiceImpl {
             otp.setExpiryTime(expiryTime);
             otpRepository.save(otp);
         }
+
+        // ✅ İstifadəçinin öz nömrəsinə OTP göndər
+        String message = "Your OTP code is: " + code;
+        twilioService.sendSms(u.getPhoneNumber(), message);
+
+        // ✅ Email göndər
+        emailService.sendOtpEmail(u.getEmail(), code);
     }
 
     public boolean check(String username, String codeToCheck) {

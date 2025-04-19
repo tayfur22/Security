@@ -29,6 +29,13 @@ public class User {
     @NotBlank(message = "Password cannot be empty")
     private String password;
 
+//    @Column(nullable = false, unique = true)
+    private String phoneNumber;
+
+//    @Column(nullable = false, unique = true)
+    private String email;
+
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_rolles",
@@ -37,7 +44,7 @@ public class User {
     )
     private Set<RoleEntity> role = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuthToken> tokens = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
